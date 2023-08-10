@@ -13,7 +13,7 @@ $(OUTPUT_DIR)/index.html: $(OUTPUT_DIR) $(OUTPUT_DIR)/banner.html $(OUTPUT_FILES
 $(OUTPUT_DIR)/banner.html: pages/banner.md
 	pandoc pages/banner.md -o $(OUTPUT_DIR)/banner.html
 
-build:
+$(OUTPUT_DIR):
 	mkdir -p $(OUTPUT_DIR)
 
 $(OUTPUT_DIR)/%.html: $(SRC_DIR)/%.md $(OUTPUT_DIR)/banner.html
