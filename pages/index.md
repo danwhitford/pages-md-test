@@ -1,9 +1,8 @@
 ---
-title: My Document
+title: Dan's Very Good Website
 css: "https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+foo: bar
 ---
-
-# Header
 
 ## Sub header
 
