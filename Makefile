@@ -3,7 +3,7 @@ OUTPUT_DIR := build
 MARKDOWN_FILES := $(wildcard $(SRC_DIR)/*.md)
 OUTPUT_FILES := $(patsubst $(SRC_DIR)/%.md,$(OUTPUT_DIR)/%.html,$(MARKDOWN_FILES))
 
-$(OUTPUT_DIR)/index.html: build build/banner.html $(OUTPUT_FILES) pages/index.md script.js
+$(OUTPUT_DIR)/index.html: $(OUTPUT_DIR) $(OUTPUT_DIR)/banner.html $(OUTPUT_FILES) pages/index.md script.js
 	pandoc pages/index.md \
 		-s \
 		-o $(OUTPUT_DIR)/index.html \
