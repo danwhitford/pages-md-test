@@ -32,9 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Pandoc
-        uses: michaelperrin/setup-pandoc@v1
-        with:
-          pandoc-version: '2.14.1'  # Adjust to the desired version
+        run: sudo apt-get install pandoc
       - name: Print Pandoc version
         run: pandoc --version
       - name: Build
