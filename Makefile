@@ -1,28 +1,41 @@
-SRC_DIR := posts
+PAGES_DIR := pages
+PARTIALS_DIR := partials
+SCRIPT_DIR := scripts
 OUTPUT_DIR := build
-MARKDOWN_FILES := $(wildcard $(SRC_DIR)/*.md)
-OUTPUT_FILES := $(patsubst $(SRC_DIR)/%.md,$(OUTPUT_DIR)/%.html,$(MARKDOWN_FILES))
-SCRIPT_FILES := $(wildcard scripts/*.js)
+
+POSTS_FILES := $(wildcard $(PAGES_DIR)/*.md)
+POSTS_OUTPUT_FILES := $(patsubst $(PAGES_DIR)/%.md,$(OUTPUT_DIR)/%.html,$(POSTS_FILES))
+
+SCRIPT_FILES := $(wildcard $(SCRIPT_DIR)/*.js)
 OUTPUT_SCRIPT_FILES := $(patsubst scripts/%.js,$(OUTPUT_DIR)/%.js,$(SCRIPT_FILES))
 
-$(OUTPUT_DIR)/index.html: $(OUTPUT_DIR) $(OUTPUT_DIR)/banner.html $(OUTPUT_FILES) pages/index.md $(OUTPUT_SCRIPT_FILES)
-	pandoc pages/index.md \
-		-s \
-		-o $(OUTPUT_DIR)/index.html \
-		-M document-css=false \
-		--include-before-body=$(OUTPUT_DIR)/banner.html
+PARTIAL_FILES := $(wildcard $(PARTIALS_DIR)/*.md)
+OUTPUT_PARTIAL_FILES := $(patsubst $(PARTIALS_DIR)/%.md,$(OUTPUT_DIR)/%.html,$(PARTIAL_FILES))
 
-$(OUTPUT_DIR)/banner.html: pages/banner.md
-	pandoc pages/banner.md -o $(OUTPUT_DIR)/banner.html
+# Build the site based on dependencies
+.PHONY: site
+site: $(OUTPUT_DIR) $(POSTS_OUTPUT_FILES) $(OUTPUT_PARTIAL_FILES) $(OUTPUT_SCRIPT_FILES)
 
-$(OUTPUT_DIR):
-	mkdir -p $(OUTPUT_DIR)
-
-$(OUTPUT_DIR)/%.html: $(SRC_DIR)/%.md $(OUTPUT_DIR)/banner.html
+# Build the individual pages as standalone html files
+$(OUTPUT_DIR)/%.html: $(PAGES_DIR)/%.md $(OUTPUT_DIR) $(OUTPUT_PARTIAL_FILES)
 	pandoc $< -o $@ \
 		-s \
 		--include-before-body=$(OUTPUT_DIR)/banner.html \
 		-M document-css=false
 
-$(OUTPUT_DIR)/%.js: scripts/%.js
+# Copy the scripts to the output directory
+$(OUTPUT_DIR)/%.js: scripts/%.js $(OUTPUT_DIR)
 	cp $< $@
+
+# Build the partials as HTML fragments
+$(OUTPUT_DIR)/%.html: $(PARTIALS_DIR)/%.md $(OUTPUT_DIR)
+	pandoc $< -o $@
+
+# Create the output directory
+$(OUTPUT_DIR):
+	mkdir -p $(OUTPUT_DIR)
+
+# Clean the output directory
+.PHONY: clean
+clean:
+	rm -rf $(OUTPUT_DIR)
